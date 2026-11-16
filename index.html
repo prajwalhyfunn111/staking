@@ -1,0 +1,590 @@
+<title>Staking Tab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: CoinPoker-style lobby skeleton — header band, then three flat panels (Info / Prize pool / Players). Staking is a fourth tab in the right panel; selecting a seller swaps the middle panel. Single dark theme, flat surfaces, white pill tabs, gold numerals. */
+:root{
+  --bg:#0a0a0c; --panel:#151517; --panel-2:#1d1d20; --row:#232327; --line:#2a2a2f;
+  --fg:#f1f1f3; --muted:#8c8c94; --faint:#5d5d65;
+  --gold:#f5c242; --blue:#3b9dff; --pos:#43c08a; --neg:#e0645c;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body{margin:0;font-size:13.5px;line-height:1.45}
+h1,h2,h3{margin:0;font-weight:600;text-wrap:balance}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:0;background:none;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1360px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.panel{background:var(--panel);border-radius:16px}
+
+/* header */
+.hdr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:0;overflow:hidden;margin-bottom:14px}
+@media(max-width:900px){.hdr{grid-template-columns:1fr}}
+.hdr-l{padding:20px 22px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.idrow{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.cup{width:52px;height:52px;border-radius:14px;background:#201a0c;display:grid;place-items:center;flex:none}
+.idrow h1{font-size:23px;letter-spacing:-.01em}
+.state{display:flex;align-items:center;gap:7px;color:var(--blue);font-size:12.5px;font-weight:500;margin-top:3px}
+.state i{width:7px;height:7px;border-radius:50%;background:currentColor;display:block}
+.tags{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.tag{font-size:11.5px;color:var(--muted);background:var(--panel-2);border-radius:7px;padding:3px 9px;font-weight:500}
+.cta{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap}
+.btn{padding:11px 18px;border-radius:11px;font-weight:600;font-size:13.5px;white-space:nowrap}
+.btn-w{background:#fff;color:#0a0a0c}
+.btn-w:hover{background:#e6e6e8}
+.btn-g{background:var(--panel-2);color:var(--fg)}
+.btn-g:hover{background:var(--row)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.money{display:flex;gap:30px;align-items:flex-end;flex-wrap:wrap}
+.money .pp .k{font-size:11.5px;color:var(--muted)}
+.money .pp .v{font-size:30px;font-weight:700;color:var(--gold);letter-spacing:-.02em;line-height:1.1}
+.kv{display:flex;justify-content:space-between;gap:24px;font-size:13px}
+.kv .k{color:var(--muted)}
+.hdr-r{background:#121214;padding:20px 22px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.ring{display:flex;gap:16px;align-items:center}
+.ring .dial{width:76px;height:76px;flex:none;position:relative;display:grid;place-items:center}
+.ring .dial b{font-size:17px;font-weight:700;line-height:1}
+.ring .dial span{font-size:9.5px;color:var(--muted);margin-top:2px;text-align:center}
+.ring .meta{flex:1;min-width:0;display:grid;gap:5px}
+.ring .meta .hd{color:var(--blue);font-size:15px;font-weight:600;margin-bottom:2px}
+.stats4{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;border-top:1px solid var(--line);padding-top:16px}
+.stats4 .k{font-size:11.5px;color:var(--muted)}
+.stats4 .v{font-size:14.5px;font-weight:600;margin-top:1px}
+
+/* columns */
+.cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1.15fr);gap:14px;align-items:stretch}
+.cols>.panel{display:flex;flex-direction:column;min-height:600px}
+#rpane{flex:1;min-height:0;display:flex;flex-direction:column}
+@media(max-width:1080px){.cols{grid-template-columns:1fr 1fr}.col-3{grid-column:1/-1}}
+@media(max-width:720px){.cols{grid-template-columns:1fr}}
+.ptop{display:flex;gap:8px;align-items:center;padding:14px;flex-wrap:wrap}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:8px 15px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.pill:hover{color:var(--fg)}
+.pill.on{background:#fff;color:#0a0a0c}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--panel-2);border-radius:999px;padding:8px 14px;min-width:0}
+.search input{background:none;border:0;color:var(--fg);font-family:inherit;font-size:12.5px;width:110px;min-width:0}
+.search input::placeholder{color:var(--faint)}
+
+/* info list */
+.info{padding:0 14px 8px;flex:1;min-height:0;overflow:auto}
+.info .ln{display:flex;justify-content:space-between;gap:18px;padding:11px 8px;border-radius:8px;font-size:13px}
+.info .ln:nth-child(odd){background:#19191c}
+.info .ln .k{color:var(--muted)}
+.info .ln .v{text-align:right;font-weight:500}
+
+/* payouts */
+.sum{display:flex;gap:10px;padding:0 14px 14px;flex-wrap:wrap}
+.sumbox{flex:1;min-width:130px;background:var(--panel-2);border-radius:12px;padding:12px 14px;display:flex;gap:11px;align-items:center}
+.sumbox .ic{width:34px;height:34px;border-radius:9px;background:#201a0c;display:grid;place-items:center;flex:none;color:var(--gold);font-size:15px}
+.sumbox .v{font-size:16px;font-weight:700}
+.sumbox .k{font-size:11px;color:var(--muted)}
+.thead{display:flex;justify-content:space-between;padding:10px 22px;font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line)}
+.plist{flex:1;min-height:0;overflow:auto}
+.plist .ln{display:flex;justify-content:space-between;align-items:center;padding:10px 22px;font-size:13px}
+.plist .ln:nth-child(even){background:#19191c}
+.plist .ln .r{color:var(--muted)}
+.plist .ln .p{color:var(--gold);font-weight:600}
+
+/* player / seller rows */
+.rhead{display:grid;gap:12px;align-items:center;padding:10px 16px;font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line)}
+.rhead.pl{grid-template-columns:38px minmax(0,1fr) auto}
+.rhead.st{grid-template-columns:54px minmax(0,1fr) 48px 66px}
+.rows{flex:1;min-height:0;overflow:auto}
+.rw{display:grid;gap:12px;align-items:center;padding:11px 16px;font-size:13px;border-bottom:1px solid #1b1b1e}
+.rw.pl{grid-template-columns:38px minmax(0,1fr) auto}
+.rw.st{grid-template-columns:54px minmax(0,1fr) 48px 66px;cursor:pointer}
+.bought{font-size:10.5px;font-weight:700;color:var(--blue);background:#10203a;border-radius:5px;padding:2px 6px;white-space:nowrap}
+.rw.st:hover{background:#1a1a1d}
+.rw .rk{color:var(--faint)}
+.rw .nm{display:flex;align-items:center;gap:8px;min-width:0}
+.rw .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rw .flag{font-size:14px;line-height:1;flex:none}
+.rw .stk{display:flex;align-items:center;gap:8px;font-weight:600}
+.coin{width:11px;height:11px;border-radius:50%;background:var(--gold);flex:none}
+.rw .mu{text-align:right;font-weight:600}
+.rw .av{text-align:right;color:var(--pos);font-weight:600}
+.rw .av.out{color:var(--faint);font-weight:400}
+.sw{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.tg{width:34px;height:19px;border-radius:999px;background:#35353b;position:relative;flex:none;transition:background .15s}
+.tg::after{content:"";position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.15s}
+.tg[aria-pressed=true]{background:var(--blue)}
+.tg[aria-pressed=true]::after{left:17.5px}
+.empty{padding:40px 20px;text-align:center;color:var(--faint);font-size:12.5px}
+.foot{padding:12px 16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)}
+
+.ava{width:44px;height:44px;border-radius:12px;background:var(--panel-2);display:grid;place-items:center;font-size:15px;font-weight:700;flex:none}
+.src{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--blue);background:#10203a;border-radius:5px;padding:2px 6px;font-weight:600}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;text-align:center}
+.tri div{background:var(--panel-2);border-radius:11px;padding:10px 6px}
+.tri .k{font-size:10.5px;color:var(--muted)}
+.tri .v{font-size:14px;font-weight:600;margin-top:2px}
+.tri .v.pos{color:var(--pos)}
+.prog .t{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px}
+.prog .t b{color:var(--fg)}
+.bar{height:5px;border-radius:3px;background:#2a2a2f;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold)}
+.note{font-size:12.5px;color:var(--muted);background:var(--panel-2);border-radius:11px;padding:12px 13px;overflow-wrap:anywhere}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(4,4,6,.8);display:grid;place-items:center;padding:16px;z-index:40;overflow-y:auto}
+.modal{background:var(--panel);border-radius:18px;width:min(440px,100%);max-height:92vh;overflow-y:auto}
+.mh{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.mh h3{font-size:16px;flex:1}
+.steps{display:flex;gap:10px;font-size:10.5px;color:var(--faint);margin-top:3px;letter-spacing:.03em}
+.steps .on{color:var(--blue);font-weight:700}
+.lnk{cursor:pointer;text-decoration:underline;text-decoration-color:#3a3a40;text-underline-offset:3px}
+.lnk:hover{color:var(--blue);text-decoration-color:var(--blue)}
+.x{font-size:21px;color:var(--faint);line-height:1;padding:2px 6px}
+.fld{padding:16px 18px;border-bottom:1px solid var(--line)}
+.fld:last-child{border-bottom:0}
+.lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:9px}
+.lab label{font-size:13px;font-weight:500}
+.lab .v{font-size:16px;font-weight:700;color:var(--gold)}
+.rng{display:flex;align-items:center;gap:11px}
+.rng .lim{font-size:11px;color:var(--faint);flex:none;min-width:28px}
+.rng .lim:last-child{text-align:right}
+input[type=range]{width:100%;accent-color:var(--gold);height:22px}
+.help{font-size:11.5px;color:var(--faint);margin-top:8px}
+.calc{background:var(--panel-2);border-radius:12px;padding:13px}
+.calc .ln{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:4px 0;color:var(--muted)}
+.calc .ln b{color:var(--fg);font-weight:600}
+.calc .ln.tot{border-top:1px solid var(--line);margin-top:6px;padding-top:9px}
+.calc .ln.tot b{font-size:19px;font-weight:700;color:var(--gold)}
+.formula{font-size:11px;color:var(--faint);margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
+.pay{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pay button{background:var(--panel-2);border-radius:11px;padding:11px;text-align:left}
+.pay button.on{background:#20262f;box-shadow:inset 0 0 0 1px var(--blue)}
+.pay button[disabled]{opacity:.4;cursor:not-allowed}
+.pay .t{font-size:12.5px;font-weight:600}
+.pay .b{font-size:11px;color:var(--faint);margin-top:2px}
+.warn{font-size:11.5px;color:#f0d9a3;background:#211a09;border-radius:11px;padding:11px}
+.err{font-size:11.5px;color:var(--neg);margin-top:8px}
+textarea{width:100%;background:var(--panel-2);border:0;border-radius:11px;color:var(--fg);padding:11px;font-family:inherit;font-size:12.5px;resize:vertical;min-height:60px}
+.cnt{font-size:11px;color:var(--faint);text-align:right;margin-top:5px}
+.swrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.swrow .lbl{font-size:13px;font-weight:500}
+.ok{text-align:center;padding:28px 22px}
+.ok .tick{width:44px;height:44px;border-radius:50%;background:#10281d;color:var(--pos);display:grid;place-items:center;margin:0 auto 12px;font-size:20px}
+.ok h3{font-size:17px;margin-bottom:6px}
+.ok p{color:var(--muted);font-size:12.5px;margin:0 auto;max-width:34ch}
+.scope{margin-top:16px;color:var(--faint);font-size:11.5px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="hdr panel">
+    <div class="hdr-l">
+      <div class="idrow">
+        <div class="cup"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f5c242" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></div>
+        <div style="min-width:0">
+          <h1>&#8366;250 Midnight Classic</h1>
+          <div class="state"><i></i>Registering</div>
+          <div class="tags"><span class="tag">7 Max</span><span class="tag">Re-Entry</span><span class="tag">Staking</span></div>
+        </div>
+        <div class="cta">
+          <button class="btn btn-g" id="sellBtn">Sell Action</button>
+          <button class="btn btn-w">Join My Table</button>
+        </div>
+      </div>
+      <div class="money">
+        <div class="pp"><div class="k">Prize Pool</div><div class="v num">&#8366;22,500</div></div>
+        <div style="flex:1;min-width:190px;display:grid;gap:7px">
+          <div class="kv"><span class="k">Buy-In</span><span class="num">&#8366;250</span></div>
+          <div class="kv"><span class="k">Minimum Cash</span><span class="num">&#8366;410</span></div>
+          <div class="kv"><span class="k">Staking Fee</span><span class="num">None</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="hdr-r">
+      <div class="ring">
+        <div class="dial">
+          <svg width="76" height="76" viewBox="0 0 76 76" style="position:absolute;inset:0"><circle cx="38" cy="38" r="34" fill="none" stroke="#2a2a2f" stroke-width="4"/><circle cx="38" cy="38" r="34" fill="none" stroke="#3b9dff" stroke-width="4" stroke-linecap="round" stroke-dasharray="214" stroke-dashoffset="64" transform="rotate(-90 38 38)"/></svg>
+          <b class="num" id="clock">48m</b><span>Starts In</span>
+        </div>
+        <div class="meta">
+          <div class="hd">Registering</div>
+          <div class="kv"><span class="k">Late Reg</span><span class="num">End of Level 9</span></div>
+          <div class="kv"><span class="k">Re-Entries</span><span class="num">Unlimited to L9</span></div>
+          <div class="kv"><span class="k">Staking Closes</span><span class="num">At start</span></div>
+        </div>
+      </div>
+      <div class="stats4">
+        <div><div class="k">Entries</div><div class="v num">418 / 3000</div></div>
+        <div><div class="k">Selling Action</div><div class="v num">7 players</div></div>
+        <div><div class="k">Starting Stack</div><div class="v num">25,000</div></div>
+        <div><div class="k">Action Sold</div><div class="v num">&#8366;4,318</div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="cols">
+    <!-- LEFT: info -->
+    <section class="panel">
+      <div class="ptop"><div class="pills"><button class="pill on">Info</button><button class="pill" disabled>Blind Structure</button></div></div>
+      <div class="info">
+        <div class="ln"><span class="k">Game Type</span><span class="v">NLH</span></div>
+        <div class="ln"><span class="k">Buy-In</span><span class="v num">&#8366;250</span></div>
+        <div class="ln"><span class="k">Starting Chips</span><span class="v num">25,000</span></div>
+        <div class="ln"><span class="k">Starting Time</span><span class="v num">16 Nov 21:30</span></div>
+        <div class="ln"><span class="k">Staking</span><span class="v">Available</span></div>
+        <div class="ln"><span class="k">Max Action Sold</span><span class="v num">90%</span></div>
+        <div class="ln"><span class="k">Markup Range</span><span class="v num">0.5x &ndash; 2.0x</span></div>
+        <div class="ln"><span class="k">Staking Window</span><span class="v">Until the tournament starts</span></div>
+        <div class="ln"><span class="k">Late Reg/Re-Entries</span><span class="v">End of Level 9</span></div>
+        <div class="ln"><span class="k">Blind Interval</span><span class="v num">10 Mins</span></div>
+        <div class="ln"><span class="k">Table Type</span><span class="v">7 players per table</span></div>
+        <div class="ln"><span class="k">Min ~ Max Players</span><span class="v num">4 ~ 3000</span></div>
+      </div>
+    </section>
+
+    <!-- MIDDLE: payouts / staking detail -->
+    <section class="panel" id="mid"></section>
+
+    <!-- RIGHT: players / tables / staking -->
+    <section class="panel col-3">
+      <div class="ptop">
+        <div class="pills" id="rtabs">
+          <button class="pill" data-t="players">Players</button>
+          <button class="pill" data-t="tables">Tables</button>
+          <button class="pill on" data-t="staking">Staking</button>
+        </div>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5d5d65" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Username" aria-label="Search players"></div>
+      </div>
+      <div id="rpane"></div>
+    </section>
+  </div>
+
+  <p class="scope">Phase 1 of Draft 1 — selling opens at registration and closes at the start. Share dilution, designated backers, auto-settlement, staking chat and Day 2 selling are out of scope.</p>
+</div>
+
+<div id="modalHost"></div>
+
+<script>
+const T={buyin:250,cur:"₮"};
+const BO={maxSell:90,muMin:0.5,muMax:2};
+const me={usdt:620,tdollar:140};
+const fmt=(n,p)=>p==="tdollar"?"T$"+n.toFixed(2):T.cur+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const mny=n=>T.cur+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const pctf=n=>n.toFixed(n%1?1:0)+"%";
+/* GG increment rule: action sells in fixed steps tied to the buy-in. */
+const stepFor=b=>b<26?10:(b<5000?1:0.1);
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const sellers=[
+ {id:1,name:"ElxDreamer",cc:"Finland",flag:"\u{1F1EB}\u{1F1EE}",ini:"EL",itm:"23.4%",roi:"+41%",win:T.cur+"2.4M",offer:40,sold:12,mu:1.2,cap:10,mine:0,stakers:4,
+  note:"Fourth year on this tour. Selling a slice to flatten variance — stats are public, judge them."},
+ {id:2,name:"pr1ya",cc:"India",flag:"\u{1F1EE}\u{1F1F3}",ini:"PR",itm:"19.8%",roi:"+12%",win:T.cur+"486K",offer:50,sold:35,mu:1.0,cap:0,mine:5,stakers:9,
+  note:"No markup today. Building a backer list for the series."},
+ {id:3,name:"teo_",cc:"Singapore",flag:"\u{1F1F8}\u{1F1EC}",ini:"TE",itm:"27.1%",roi:"+63%",win:T.cur+"1.1M",offer:30,sold:30,mu:1.8,cap:5,mine:0,stakers:11,
+  note:"Won this event in 2024. Small piece only — 1.8x is high and I won't pretend otherwise."},
+ {id:4,name:"sokol90",cc:"Poland",flag:"\u{1F1F5}\u{1F1F1}",ini:"SO",itm:"14.2%",roi:"-4%",win:T.cur+"73K",offer:90,sold:22,mu:0.9,cap:25,mine:0,stakers:3,
+  note:"First event at this buy-in. Selling the maximum at a discount."},
+ {id:5,name:"amaowusu",cc:"Ghana",flag:"\u{1F1EC}\u{1F1ED}",ini:"AM",itm:"22.0%",roi:"+27%",win:T.cur+"640K",offer:35,sold:9,mu:1.35,cap:10,mine:0,stakers:2,
+  note:"Back from a six-month break. Stats are from before it."},
+ {id:6,name:"ferr",cc:"Italy",flag:"\u{1F1EE}\u{1F1F9}",ini:"FE",itm:"18.6%",roi:"+6%",win:T.cur+"295K",offer:60,sold:51,mu:1.05,cap:15,mine:7.5,stakers:6,
+  note:"Nearly sold out. Same terms every week, no markup games."},
+ {id:7,name:"meitnk",cc:"Japan",flag:"\u{1F1EF}\u{1F1F5}",ini:"ME",itm:"25.3%",roi:"+38%",win:T.cur+"1.8M",offer:25,sold:4,mu:1.5,cap:5,mine:0,stakers:1,
+  note:"Just listed. Small piece, high markup — I understand if that isn't for you."}
+];
+const players=[["ElxDreamer",65984],["Gosppel",49842],["didenko07",48624],["seuss80",43791],["hercules24",35394],["simodefa",35370],["RYANS321",35229],["lukabrazzi",35180],["saturnthecat",33107],["RobbyWasabi",32138],["Pagode90",32083],["VAMPZDC",31445]];
+const payouts=[["1",381.46],["2",251.57],["3",169.05],["4",116.61],["5",83.21],["6",61.96],["7",48.44],["8-9",39.88],["10-11",34.5],["12-13",30.77],["14-15",28.7]];
+
+let tab="staking", availOnly=false, q="";
+const left=s=>Math.max(0,+(s.offer-s.sold).toFixed(1));
+
+/* ---------- middle panel ---------- */
+function renderMid(){
+  $("mid").innerHTML=`<div class="ptop"><div class="pills"><button class="pill on">Prize Pool</button></div></div>
+      <div class="sum">
+        <div class="sumbox"><div class="ic">&#8366;</div><div><div class="v num">&#8366;22,500</div><div class="k">Prize pool</div></div></div>
+        <div class="sumbox"><div class="ic">&#9733;</div><div><div class="v num">15</div><div class="k">Places paid</div></div></div>
+      </div>
+      <div class="thead"><span>Rank</span><span>Prize</span></div>
+      <div class="plist">${payouts.map(p=>`<div class="ln"><span class="r num">${p[0]}</span><span class="p num">${mny(p[1])}</span></div>`).join("")}</div>`;
+}
+
+/* ---------- right panel ---------- */
+function renderRight(){
+  document.querySelectorAll("#rtabs .pill").forEach(p=>p.classList.toggle("on",p.dataset.t===tab));
+  const pane=$("rpane");
+  if(tab==="players"){
+    const list=players.filter(p=>p[0].toLowerCase().includes(q));
+    pane.innerHTML=`<div class="rhead pl"><span>Rank</span><span>Players</span><span>Stack</span></div>
+      <div class="rows">${list.map((p,i)=>`<div class="rw pl"><span class="rk num">${i+1}</span><span class="nm"><span>${esc(p[0])}</span></span><span class="stk num"><i class="coin"></i>${p[1].toLocaleString()}</span></div>`).join("")||'<div class="empty">No player matches that name.</div>'}</div>`;
+    return;
+  }
+  if(tab==="tables"){
+    pane.innerHTML=`<div class="empty">Tables are drawn when the tournament starts.</div>`;
+    return;
+  }
+  let list=sellers.filter(s=>s.name.toLowerCase().includes(q));
+  if(availOnly)list=list.filter(s=>left(s)>0);
+  pane.innerHTML=`<div class="rhead st"><span>Bought</span><span>Seller</span><span style="text-align:right">MU</span>
+      <span class="sw" style="justify-content:flex-end"><button class="tg" id="avOnly" aria-pressed="${availOnly}" aria-label="Available only"></button></span></div>
+    <div class="rows">${list.map(s=>{
+      const av=left(s),gone=av<=0;
+      return `<div class="rw st" data-id="${s.id}" role="button" tabindex="0">
+        <span>${s.mine?`<span class="bought num">${pctf(s.mine)}</span>`:""}</span>
+        <span class="nm"><span class="flag">${s.flag}</span><span class="lnk">${esc(s.name)}</span></span>
+        <span class="mu num">${s.mu.toFixed(2)}</span>
+        <span class="av num ${gone?"out":""}">${gone?"Sold out":pctf(av)}</span>
+      </div>`}).join("")||'<div class="empty">Nobody is selling action under that name.</div>'}</div>
+    <div class="foot">There is no fee for staking. Markup sets the price, never the payout.</div>`;
+  $("avOnly").onclick=e=>{availOnly=e.currentTarget.getAttribute("aria-pressed")!=="true";renderRight()};
+  pane.querySelectorAll(".rw.st").forEach(r=>{
+    const open=()=>openProfile(+r.dataset.id);
+    r.onclick=open;
+    r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}};
+  });
+}
+document.querySelectorAll("#rtabs .pill").forEach(p=>p.onclick=()=>{tab=p.dataset.t;q="";$("q").value="";renderRight();renderMid()});
+$("q").oninput=e=>{q=e.target.value.trim().toLowerCase();renderRight();renderMid()};
+
+/* ---------- buy ---------- */
+let B=null;
+function openBuy(id){
+  const s=sellers.find(x=>x.id===id),av=left(s);
+  const st=stepFor(T.buyin);
+  const raw=s.cap?Math.min(av,Math.max(0,s.cap-(s.mine||0))):av;
+  const max=+(Math.floor(+(raw/st).toFixed(4))*st).toFixed(1);
+  const def=Math.min(max,st*5<=10?+(st*5).toFixed(1):st);
+  B={s,st,pct:def,pay:"usdt"};
+  const m=document.createElement("div");m.className="scrim";m.id="scrim";
+  m.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="Buy action">
+    <div class="mh"><div class="ava">${s.ini}</div>
+      <div style="flex:1;min-width:0"><h3>${esc(s.name)}</h3>
+        <div class="steps"><span class="lnk" id="bBack">1 &middot; Profile</span><span class="on">2 &middot; Buy Action</span></div></div>
+      <button class="x" id="mx" aria-label="Close">&times;</button></div>
+    <div class="fld">
+      <div class="lab"><label for="bPct">Share to buy</label><span class="v num" id="bPctV"></span></div>
+      <div class="rng"><span class="lim num">0%</span><input type="range" id="bPct" min="0" max="${max}" step="${st}" value="${B.pct}" ${max<=0?"disabled":""}><span class="lim num">${pctf(max)}</span></div>
+      <div class="help">${max<=0
+        ? `You already hold the ${s.cap}% this seller allows per backer.`
+        : `Sold in ${pctf(st)} steps &middot; ${pctf(av)} unsold${s.cap?` &middot; capped at ${s.cap}% per backer${s.mine?`, you hold ${pctf(s.mine)}`:""}`:""}`}</div>
+    </div>
+    <div class="fld">
+      <div class="calc">
+        <div class="ln"><span>Buy-in</span><b class="num">${mny(T.buyin)}</b></div>
+        <div class="ln"><span>Share</span><b class="num" id="bShare"></b></div>
+        <div class="ln"><span>Markup</span><b class="num">${s.mu.toFixed(2)}x</b></div>
+        <div class="ln tot"><span>You pay</span><b class="num" id="bCost"></b></div>
+        <div class="formula" id="bFormula"></div>
+      </div>
+      <p class="help" id="bPayout"></p>
+    </div>
+    <div class="fld">
+      <div class="lab"><label>Pay with</label></div>
+      <div class="pay" id="bPay">
+        <button data-p="usdt" class="on"><div class="t">USDT</div><div class="b num">${fmt(me.usdt,"usdt")}</div></button>
+        <button data-p="tdollar"><div class="t">T$</div><div class="b num">${fmt(me.tdollar,"tdollar")}</div></button>
+      </div>
+      <div class="err" id="bErr" hidden></div>
+    </div>
+    <div class="fld"><div class="warn"><b>Stakes are final.</b> Once confirmed, a stake can't be cancelled or resold. If ${esc(s.name)} busts, it pays nothing.</div></div>
+    <div class="fld" style="display:flex;gap:9px">
+      <button class="btn btn-g" id="bCancel">Cancel</button>
+      <button class="btn btn-w" id="bOk" style="flex:1">Buy Action</button>
+    </div></div>`;
+  $("modalHost").appendChild(m);
+  m.querySelector("#bPct").oninput=e=>{B.pct=+e.target.value;buyMath()};
+  m.querySelectorAll("#bPay button").forEach(b=>b.onclick=()=>{
+    B.pay=b.dataset.p;
+    m.querySelectorAll("#bPay button").forEach(x=>x.classList.toggle("on",x===b));
+    buyMath();
+  });
+  m.querySelector("#mx").onclick=closeModal;
+  m.querySelector("#bBack").onclick=()=>{closeModal();openProfile(id)};
+  m.querySelector("#bCancel").onclick=closeModal;
+  m.onclick=e=>{if(e.target===m)closeModal()};
+  m.querySelector("#bOk").onclick=doBuy;
+  buyMath();
+}
+const cost=()=>T.buyin*(B.pct/100)*B.s.mu;
+function buyMath(){
+  const {s,pct,pay}=B,c=cost(),bal=pay==="tdollar"?me.tdollar:me.usdt;
+  $("bPctV").textContent=pctf(pct);
+  $("bShare").textContent=pctf(pct);
+  $("bCost").textContent=fmt(c,pay);
+  $("bFormula").textContent=`${mny(T.buyin)} × ${pctf(pct)} × ${s.mu.toFixed(2)} = ${fmt(c,pay)}`;
+  $("bPayout").textContent=pct>0?`You receive ${pctf(pct)} of whatever ${s.name} wins.`:"Move the slider to buy a share.";
+  const short=c>bal;
+  $("bErr").hidden=!short;
+  if(short)$("bErr").textContent=`Short by ${fmt(c-bal,pay)}. Lower the share or pay from your other balance.`;
+  $("bOk").disabled=short||pct<=0;
+}
+function doBuy(){
+  const {s,pct,pay}=B,c=cost();
+  if(pay==="tdollar")me.tdollar-=c;else me.usdt-=c;
+  s.sold=+(s.sold+pct).toFixed(1);s.mine=+((s.mine||0)+pct).toFixed(1);s.stakers+=1;
+  renderMid();renderRight();
+  $("scrim").innerHTML=`<div class="modal"><div class="ok">
+    <div class="tick">&check;</div><h3>You own ${pctf(s.mine)} of ${esc(s.name)}</h3>
+    <p>${fmt(c,pay)} held until the tournament starts. Track it in My Tournaments &rsaquo; Staking.</p>
+    <div style="padding:18px 0 0"><button class="btn btn-w" id="okDone" style="width:100%">Done</button></div>
+  </div></div>`;
+  $("okDone").onclick=closeModal;
+}
+function openProfile(id){
+  const s=sellers.find(x=>x.id===id),av=left(s);
+  const m=document.createElement("div");m.className="scrim";m.id="scrim";
+  m.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="Player profile">
+    <div class="mh"><div class="ava">${s.ini}</div>
+      <div style="flex:1;min-width:0"><h3>${esc(s.name)}</h3>
+        <div class="steps"><span class="on">1 &middot; Profile</span><span>2 &middot; Buy Action</span></div></div>
+      <button class="x" id="mx" aria-label="Close">&times;</button></div>
+    <div class="fld">
+      <div class="m" style="font-size:11.5px;color:var(--faint);margin-bottom:10px">${s.flag} ${esc(s.cc)} &middot; <span class="src">PokerIntel</span></div>
+      <div class="tri"><div><div class="k">ITM</div><div class="v num">${s.itm}</div></div>
+        <div><div class="k">ROI</div><div class="v num ${s.roi.startsWith("+")?"pos":""}">${s.roi}</div></div>
+        <div><div class="k">Career</div><div class="v num">${s.win}</div></div></div>
+      <div class="calc" style="margin-top:12px">
+        <div class="ln"><span>Tournaments tracked</span><b class="num">1,284</b></div>
+        <div class="ln"><span>Times staked</span><b class="num">37</b></div>
+        <div class="ln"><span>Returned to backers</span><b class="num" style="color:var(--pos)">+18%</b></div>
+        <div class="formula">Pulled from PokerIntel. Staking history counts only stakes sold here.</div>
+      </div>
+      <p class="note" style="margin:12px 0 0">${esc(s.note)}</p>
+    </div>
+    <div class="fld">
+      <div class="tri">
+        <div><div class="k">Markup</div><div class="v num" style="color:var(--gold)">${s.mu.toFixed(2)}x</div></div>
+        <div><div class="k">Selling</div><div class="v num">${pctf(s.offer)}</div></div>
+        <div><div class="k">Available</div><div class="v num">${av<=0?"Sold out":pctf(av)}</div></div>
+      </div>
+      <div class="prog" style="margin-top:13px">
+        <div class="t"><span><b class="num">${pctf(s.sold)}</b> of ${pctf(s.offer)} sold</span><span class="num">${s.stakers} staker${s.stakers===1?"":"s"}</span></div>
+        <div class="bar"><i style="width:${s.offer?Math.min(100,s.sold/s.offer*100):0}%"></i></div>
+      </div>
+      ${s.mine?`<div class="help" style="color:var(--pos)">You already hold ${pctf(s.mine)} of this player.</div>`:""}
+      <div class="help">${s.cap?`Capped at ${s.cap}% per backer &middot; `:""}sold in ${pctf(stepFor(T.buyin))} steps.</div>
+    </div>
+    <div class="fld" style="display:flex;gap:9px">
+      <button class="btn btn-g" id="pClose">Close</button>
+      <button class="btn btn-w" id="pBuy" style="flex:1" ${av<=0?"disabled":""}>${av<=0?"Sold out":"Buy Action"}</button>
+    </div></div>`;
+  $("modalHost").appendChild(m);
+  m.querySelector("#mx").onclick=closeModal;
+  m.querySelector("#pClose").onclick=closeModal;
+  m.onclick=e=>{if(e.target===m)closeModal()};
+  const pb=m.querySelector("#pBuy");
+  if(!pb.disabled)pb.onclick=()=>{closeModal();openBuy(id)};
+}
+function closeModal(){const s=$("scrim");if(s)s.remove()}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+/* ---------- sell ---------- */
+const S={pct:40,mu:1.2,capOn:true,cap:10,autoOn:true,auto:10,listed:false};
+function openSell(){
+  const m=document.createElement("div");m.className="scrim";m.id="scrim";
+  m.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="Sell action">
+    <div class="mh"><h3>Sell My Action</h3><button class="x" id="mx" aria-label="Close">&times;</button></div>
+    <div id="sellBody"></div></div>`;
+  $("modalHost").appendChild(m);
+  m.querySelector("#mx").onclick=closeModal;
+  m.onclick=e=>{if(e.target===m)closeModal()};
+  renderSell();
+}
+function renderSell(){
+  const host=$("sellBody");
+  if(S.listed){
+    const gross=T.buyin*S.pct/100*S.mu;
+    host.innerHTML=`<div class="fld"><div class="calc">
+        <div class="ln"><span>Listed</span><b class="num">${pctf(S.pct)} at ${S.mu.toFixed(2)}x</b></div>
+        <div class="ln"><span>Sold so far</span><b class="num">0% &middot; 0 stakers</b></div>
+        <div class="ln tot"><span>If it sells out</span><b class="num">${mny(gross)}</b></div>
+        <div class="formula">You can change the listing until the tournament starts. Selling after the start is Phase 2.</div>
+      </div></div>
+      <div class="fld" style="display:flex;gap:9px">
+        <button class="btn btn-g" id="cancelSell" style="flex:1">Cancel Sell Action</button>
+        <button class="btn btn-w" id="editSell">Sell More</button>
+      </div>`;
+    $("cancelSell").onclick=()=>{S.listed=false;renderSell()};
+    $("editSell").onclick=()=>{S.listed=false;renderSell()};
+    return;
+  }
+  host.innerHTML=`<div class="fld">
+      <div class="lab"><label for="sPct">Share of my action to sell</label><span class="v num" id="sPctV"></span></div>
+      <div class="rng"><span class="lim num">0%</span><input type="range" id="sPct" min="0" max="${BO.maxSell}" step="5" value="${S.pct}"><span class="lim num">${BO.maxSell}%</span></div>
+      <div class="help">Capped at ${BO.maxSell}% — you always keep a piece of yourself.</div>
+    </div>
+    <div class="fld">
+      <div class="lab"><label for="sMu">Markup</label><span class="v num" id="sMuV"></span></div>
+      <div class="rng"><span class="lim num">${BO.muMin}x</span><input type="range" id="sMu" min="${BO.muMin}" max="${BO.muMax}" step="0.05" value="${S.mu}"><span class="lim num">${BO.muMax.toFixed(1)}x</span></div>
+      <div class="help">Markup changes what backers pay, never what they are paid.</div>
+    </div>
+    <div class="fld">
+      <div class="swrow"><span class="lbl">Cap one backer's share</span><button class="tg" id="sCapOn" aria-pressed="${S.capOn}" aria-label="Cap per backer"></button></div>
+      <div id="sCapBox" style="margin-top:12px">
+        <div class="lab"><label for="sCap">Maximum per backer</label><span class="v num" id="sCapV"></span></div>
+        <div class="rng"><span class="lim num">5%</span><input type="range" id="sCap" min="5" max="50" step="5" value="${S.cap}"><span class="lim num">50%</span></div>
+      </div>
+    </div>
+    <div class="fld">
+      <div class="swrow"><span class="lbl">Unregister me if it doesn't sell</span><button class="tg" id="sAutoOn" aria-pressed="${S.autoOn}" aria-label="Auto unregister"></button></div>
+      <div id="sAutoBox" style="margin-top:12px">
+        <div class="lab"><label for="sAuto">Minimum sold by start</label><span class="v num" id="sAutoV"></span></div>
+        <div class="rng"><span class="lim num">5%</span><input type="range" id="sAuto" min="5" max="50" step="5" value="${S.auto}"><span class="lim num">50%</span></div>
+        <div class="help">Below this, you are pulled from the tournament and the ${mny(T.buyin)} buy-in is refunded.</div>
+      </div>
+    </div>
+    <div class="fld">
+      <div class="lab"><label for="sNote">Personal note</label></div>
+      <textarea id="sNote" maxlength="140" placeholder="Tell backers why you're worth a piece.">Fourth year on this tour. Selling a slice to flatten variance — stats are public.</textarea>
+      <div class="cnt num"><span id="sNoteN">0</span> / 140</div>
+    </div>
+    <div class="fld">
+      <div class="calc">
+        <div class="ln"><span>Face value sold</span><b class="num" id="sFace"></b></div>
+        <div class="ln"><span>Markup premium</span><b class="num" id="sPrem"></b></div>
+        <div class="ln tot"><span>Backers pay you</span><b class="num" id="sGross"></b></div>
+        <div class="ln" style="margin-top:6px"><span id="sNetK"></span><b class="num" id="sNet"></b></div>
+        <div class="formula" id="sFormula"></div>
+      </div>
+    </div>
+    <div class="fld" style="display:flex;gap:9px">
+      <button class="btn btn-g" id="sCancel">Cancel</button>
+      <button class="btn btn-w" id="sGo" style="flex:1">Sell Action</button>
+    </div>`;
+  const bind=(id,k)=>{$(id).oninput=e=>{S[k]=+e.target.value;sellMath()}};
+  bind("sPct","pct");bind("sMu","mu");bind("sCap","cap");bind("sAuto","auto");
+  $("sCapOn").onclick=e=>{S.capOn=e.currentTarget.getAttribute("aria-pressed")!=="true";e.currentTarget.setAttribute("aria-pressed",S.capOn);sellMath()};
+  $("sAutoOn").onclick=e=>{S.autoOn=e.currentTarget.getAttribute("aria-pressed")!=="true";e.currentTarget.setAttribute("aria-pressed",S.autoOn);sellMath()};
+  $("sNote").oninput=e=>{$("sNoteN").textContent=e.target.value.length};
+  $("sCancel").onclick=closeModal;
+  $("sGo").onclick=()=>{S.listed=true;renderSell()};
+  $("sNoteN").textContent=$("sNote").value.length;
+  sellMath();
+}
+function sellMath(){
+  const face=T.buyin*S.pct/100,gross=face*S.mu;
+  $("sPctV").textContent=pctf(S.pct);
+  $("sMuV").textContent=S.mu.toFixed(2)+"x";
+  $("sCapV").textContent=pctf(S.cap);
+  $("sAutoV").textContent=pctf(S.auto);
+  $("sCapBox").hidden=!S.capOn;
+  $("sAutoBox").hidden=!S.autoOn;
+  $("sFace").textContent=mny(face);
+  $("sPrem").textContent="+"+mny(gross-face);
+  $("sGross").textContent=mny(gross);
+  $("sNet").textContent=mny(T.buyin-gross);
+  $("sNetK").textContent=`Your net cost for ${pctf(100-S.pct)} of yourself`;
+  $("sFormula").textContent=`${mny(T.buyin)} × ${pctf(S.pct)} × ${S.mu.toFixed(2)} = ${mny(gross)}`;
+}
+$("sellBtn").onclick=openSell;
+
+/* ---------- clock ---------- */
+let secs=48*60;
+setInterval(()=>{
+  if(secs<=0)return;
+  secs--;
+  const m=Math.floor(secs/60),s=secs%60;
+  $("clock").textContent=m>0?m+"m":s+"s";
+},1000);
+
+renderMid();renderRight();
+</script>
