@@ -34,11 +34,30 @@ player panel.
 
 **Operator limits** are applied in code (`BO`), not exposed as a screen.
 
+**Staking Record** — account menu > Staking Record, or the `#record` route
+- `As Backer` — every stake bought: player, share, markup, paid, finish, returned
+- `As Seller` — every listing: share sold, markup, backers, raised, paid out
+- `By Tournament` — one row per event, both roles side by side
+- A backer can hold several players in one tournament and sell their own action
+  in that same tournament; tournaments are keyed by instance, so the same event
+  on different dates never collapses into one row
+- Read-only. Anything still actionable lives in the tournament lobby.
+
+## Routes
+
+Single page, hash-routed: the base URL opens the tournament lobby, `#record`
+opens the Staking Record.
+
 ## Deliberately out of scope
 
 Present in the GGPoker reference, absent from Draft 1: share dilution for
 re-entries, designating specific backers, automatic settlement of winnings,
 staking chat and follow, selling after the start or on Day 2, and timed entry.
+
+The staking **hub** — the separate section where backers and sellers manage
+everything in one place — is not designed here. The Staking Record is a record
+only; when the hub lands, this becomes a tab inside it and the menu item deep
+links there.
 
 ## Open questions the prototype assumes an answer to
 

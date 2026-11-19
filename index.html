@@ -98,6 +98,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .rw.pl{grid-template-columns:38px minmax(0,1fr) auto}
 .rw.st{grid-template-columns:54px minmax(0,1fr) 48px 66px;cursor:pointer}
 .bought{font-size:10.5px;font-weight:700;color:var(--blue);background:#10203a;border-radius:5px;padding:2px 6px;white-space:nowrap}
+.bought.me{color:var(--gold);background:#241c08}
+.rw.st.you{background:#121820;box-shadow:inset 2px 0 0 var(--blue)}
+.rw.st.you:hover{background:#161e28}
+.mine{display:flex;gap:10px 26px;flex-wrap:wrap;padding:11px 16px;background:#121214;border-bottom:1px solid var(--line);font-size:12px}
+.mine div{min-width:0}
+.mine .k{color:var(--muted);margin-right:8px}
+.mine b{font-weight:600}
+.mine b.none{color:var(--faint);font-weight:400}
 .rw.st:hover{background:#1a1a1d}
 .rw .rk{color:var(--faint)}
 .rw .nm{display:flex;align-items:center;gap:8px;min-width:0}
@@ -173,9 +181,96 @@ textarea{width:100%;background:var(--panel-2);border:0;border-radius:11px;color:
 .ok p{color:var(--muted);font-size:12.5px;margin:0 auto;max-width:34ch}
 .scope{margin-top:16px;color:var(--faint);font-size:11.5px;text-align:center}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* global nav + account menu */
+.topnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:#0e0e10;border-bottom:1px solid var(--line)}
+.topnav .in{max-width:1360px;margin:0 auto;display:flex;align-items:center;gap:20px;padding-block:11px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.mark span{width:24px;height:24px;border-radius:7px;background:var(--gold);color:#0a0a0c;display:grid;place-items:center;font-size:12px}
+.nav{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.nav::-webkit-scrollbar{display:none}
+.nav button{padding:7px 13px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.nav button.on{color:var(--fg);background:var(--panel-2)}
+.acct{margin-left:auto;display:flex;align-items:center;gap:9px;background:var(--panel-2);border-radius:999px;padding:4px 13px 4px 4px;flex:none}
+.acct .pic{width:27px;height:27px;border-radius:50%;background:#32323a;display:grid;place-items:center;font-size:10.5px;font-weight:700;flex:none}
+.acct .u{font-size:11px;color:var(--muted);line-height:1.25;text-align:left}
+.acct .bal{font-size:12px;color:var(--gold);font-weight:700;line-height:1.25;text-align:left}
+.menu{position:absolute;right:max(16px,env(safe-area-inset-right,0px));margin-top:8px;background:var(--panel);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.65);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,200px);width:min(540px,calc(100vw - 32px));z-index:31;overflow:hidden}
+@media(max-width:560px){.menu{grid-template-columns:1fr}}
+.menu .l{padding:11px;display:grid;gap:1px;border-right:1px solid var(--line)}
+.menu .r{padding:11px;display:grid;gap:1px;align-content:start}
+.menu .hd{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:7px 11px 5px}
+.mi{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;font-size:13px;color:var(--fg);text-align:left;width:100%}
+.mi:hover{background:var(--panel-2)}
+.mi .ico{width:25px;height:25px;border-radius:7px;background:var(--panel-2);display:grid;place-items:center;font-size:9.5px;font-weight:700;color:var(--muted);flex:none;letter-spacing:.02em}
+.mi .ext{margin-left:auto;color:var(--faint);font-size:11px}
+.mi.on{background:#10203a;color:var(--fg)}
+.tagnew{font-size:9px;font-weight:700;letter-spacing:.06em;color:#0a0a0c;background:var(--gold);border-radius:4px;padding:1px 5px;margin-left:auto}
+
+/* staking record */
+.rec-top{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.rec-top h2{font-size:21px}
+.rec-top .sub{font-size:12.5px;color:var(--muted);margin-top:3px;max-width:62ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:14px}
+.tile{background:var(--panel);border-radius:14px;padding:14px 16px;min-width:0}
+.tile .k{font-size:11.5px;color:var(--muted)}
+.tile .v{font-size:22px;font-weight:700;margin-top:3px;letter-spacing:-.01em}
+.tile .v.gold{color:var(--gold)}
+.tile .v.pos{color:var(--pos)}
+.scrollx{overflow-x:auto}
+.led{width:100%;border-collapse:collapse;font-size:12.5px;min-width:760px}
+.led th{text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.led td{padding:11px 14px;border-bottom:1px solid #1b1b1e;white-space:nowrap}
+.led tbody tr:last-child td{border-bottom:0}
+.led tbody tr:hover td{background:#19191c}
+.led .r{text-align:right}
+.led .dim{color:var(--faint)}
+.chipst{font-size:10px;font-weight:700;letter-spacing:.04em;border-radius:5px;padding:2px 7px;text-transform:uppercase}
+.st-settled{color:var(--pos);background:#102a1e}
+.st-pending{color:var(--blue);background:#10203a}
+.st-refunded{color:var(--muted);background:var(--panel-2)}
+.st-lost{color:var(--neg);background:#2a1314}
 </style>
 
-<div class="wrap">
+<div class="topnav">
+  <div class="in">
+    <div class="mark"><span>P</span>Poker</div>
+    <nav class="nav" id="gnav">
+      <button>Poker</button>
+      <button class="on" data-go="lobby">Tournaments</button>
+      <button>Casino</button>
+      <button>Sportsbook</button>
+      <button>Markets</button>
+    </nav>
+    <button class="acct" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+      <span class="pic">BZ</span>
+      <span><span class="u">your_handle</span><br><span class="bal num">&#8366;620.00</span></span>
+    </button>
+  </div>
+  <div class="menu" id="acctMenu" hidden>
+    <div class="l">
+      <div class="hd">Programs</div>
+      <button class="mi"><span class="ico">LB</span>Leaderboards</button>
+      <button class="mi"><span class="ico">CR</span>Career</button>
+      <button class="mi"><span class="ico">PI</span>PokerIntel</button>
+      <button class="mi"><span class="ico">WN</span>Winners</button>
+      <button class="mi"><span class="ico">SM</span>Showdown Meter</button>
+      <button class="mi"><span class="ico">RF</span>Refer a Friend</button>
+    </div>
+    <div class="r">
+      <div class="hd">Account</div>
+      <button class="mi">Wallet<span class="ext">&#8599;</span></button>
+      <button class="mi">Account Settings<span class="ext">&#8599;</span></button>
+      <button class="mi">My Profile<span class="ext">&#8599;</span></button>
+      <button class="mi">Game History<span class="ext">&#8599;</span></button>
+      <button class="mi" id="miRecord" data-go="record">Staking Record<span class="tagnew">New</span></button>
+      <button class="mi">My Missions<span class="ext">&#8599;</span></button>
+      <button class="mi" style="color:var(--muted)">Logout<span class="ext">&#8599;</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="view-lobby">
   <header class="hdr panel">
     <div class="hdr-l">
       <div class="idrow">
@@ -214,7 +309,7 @@ textarea{width:100%;background:var(--panel-2);border:0;border-radius:11px;color:
       </div>
       <div class="stats4">
         <div><div class="k">Entries</div><div class="v num">418 / 3000</div></div>
-        <div><div class="k">Selling Action</div><div class="v num">7 players</div></div>
+        <div><div class="k">Selling Action</div><div class="v num" id="statSelling">7 players</div></div>
         <div><div class="k">Starting Stack</div><div class="v num">25,000</div></div>
         <div><div class="k">Action Sold</div><div class="v num">&#8366;4,318</div></div>
       </div>
@@ -258,7 +353,26 @@ textarea{width:100%;background:var(--panel-2);border:0;border-radius:11px;color:
     </section>
   </div>
 
-  <p class="scope">Phase 1 of Draft 1 — selling opens at registration and closes at the start. Share dilution, designated backers, auto-settlement, staking chat and Day 2 selling are out of scope.</p>
+  <p class="scope">Phase 1 of Draft 1 — selling opens at registration and closes at the start. Share dilution, designated backers, auto-settlement, staking chat and Day 2 selling are out of scope. The staking hub is a separate piece, not designed here.</p>
+</div>
+
+<div class="wrap" id="view-record" hidden>
+  <div class="rec-top">
+    <div style="min-width:0">
+      <h2>Staking Record</h2>
+    </div>
+    <div class="pills" id="recTabs" style="margin-left:auto">
+      <button class="pill on" data-rt="backer">As Backer</button>
+      <button class="pill" data-rt="seller">As Seller</button>
+      <button class="pill" data-rt="tour">By Tournament</button>
+    </div>
+  </div>
+  <div class="tiles" id="recTiles"></div>
+  <div class="panel" style="overflow:hidden">
+    <div class="scrollx"><table class="led"><thead id="recHead"></thead><tbody id="recBody"></tbody></table></div>
+    <div class="foot" id="recFoot"></div>
+  </div>
+  <p class="scope">Counts and totals cover settled stakes. A pending row settles when that tournament finishes.</p>
 </div>
 
 <div id="modalHost"></div>
@@ -297,6 +411,26 @@ const payouts=[["1",381.46],["2",251.57],["3",169.05],["4",116.61],["5",83.21],[
 let tab="staking", availOnly=false, q="";
 const left=s=>Math.max(0,+(s.offer-s.sold).toFixed(1));
 
+/* A backer can hold several players in one tournament, and sell their own action at the same time. */
+function myHoldings(){
+  const held=sellers.filter(s=>s.mine>0);
+  return {n:held.length,cost:held.reduce((a,s)=>a+T.buyin*(s.mine/100)*s.mu,0)};
+}
+function myRow(){
+  if(!S.listed)return "";
+  const av=Math.max(0,+(S.pct-S.sold).toFixed(1));
+  return `<div class="rw st you" data-me="1" role="button" tabindex="0">
+    <span><span class="bought me">You</span></span>
+    <span class="nm"><span class="flag">\u{1F1EE}\u{1F1F3}</span><span class="lnk">your_handle</span></span>
+    <span class="mu num">${S.mu.toFixed(2)}</span>
+    <span class="av num">${pctf(av)}</span>
+  </div>`;
+}
+function updateSellBtn(){
+  $("sellBtn").textContent=S.listed?"Manage My Action":"Sell Action";
+  $("statSelling").textContent=(sellers.length+(S.listed?1:0))+" players";
+}
+
 /* ---------- middle panel ---------- */
 function renderMid(){
   $("mid").innerHTML=`<div class="ptop"><div class="pills"><button class="pill on">Prize Pool</button></div></div>
@@ -324,23 +458,30 @@ function renderRight(){
   }
   let list=sellers.filter(s=>s.name.toLowerCase().includes(q));
   if(availOnly)list=list.filter(s=>left(s)>0);
-  pane.innerHTML=`<div class="rhead st"><span>Bought</span><span>Seller</span><span style="text-align:right">MU</span>
+  const h=myHoldings();
+  pane.innerHTML=`<div class="mine">
+      <div><span class="k">You hold</span><b class="${h.n?"":"none"}">${h.n?`${h.n} player${h.n===1?"":"s"} &middot; ${mny(h.cost)}`:"No stakes yet"}</b></div>
+      <div><span class="k">You sell</span><b class="${S.listed?"":"none"}">${S.listed?`${pctf(S.pct)} at ${S.mu.toFixed(2)}x &middot; ${pctf(S.sold)} sold`:"Not listed"}</b></div>
+    </div>
+    <div class="rhead st"><span>Bought</span><span>Seller</span><span style="text-align:right">MU</span>
       <span class="sw" style="justify-content:flex-end"><button class="tg" id="avOnly" aria-pressed="${availOnly}" aria-label="Available only"></button></span></div>
-    <div class="rows">${list.map(s=>{
+    <div class="rows">${myRow()}${list.map(s=>{
       const av=left(s),gone=av<=0;
       return `<div class="rw st" data-id="${s.id}" role="button" tabindex="0">
         <span>${s.mine?`<span class="bought num">${pctf(s.mine)}</span>`:""}</span>
         <span class="nm"><span class="flag">${s.flag}</span><span class="lnk">${esc(s.name)}</span></span>
         <span class="mu num">${s.mu.toFixed(2)}</span>
         <span class="av num ${gone?"out":""}">${gone?"Sold out":pctf(av)}</span>
-      </div>`}).join("")||'<div class="empty">Nobody is selling action under that name.</div>'}</div>
+      </div>`}).join("")||'<div class="empty">No other player matches that name.</div>'}</div>
     <div class="foot">There is no fee for staking. Markup sets the price, never the payout.</div>`;
   $("avOnly").onclick=e=>{availOnly=e.currentTarget.getAttribute("aria-pressed")!=="true";renderRight()};
-  pane.querySelectorAll(".rw.st").forEach(r=>{
+  pane.querySelectorAll(".rw.st[data-id]").forEach(r=>{
     const open=()=>openProfile(+r.dataset.id);
     r.onclick=open;
     r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}};
   });
+  const own=pane.querySelector("[data-me]");
+  if(own){own.onclick=openSell;own.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openSell()}}}
 }
 document.querySelectorAll("#rtabs .pill").forEach(p=>p.onclick=()=>{tab=p.dataset.t;q="";$("q").value="";renderRight();renderMid()});
 $("q").oninput=e=>{q=e.target.value.trim().toLowerCase();renderRight();renderMid()};
@@ -478,7 +619,7 @@ function closeModal(){const s=$("scrim");if(s)s.remove()}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 
 /* ---------- sell ---------- */
-const S={pct:40,mu:1.2,capOn:true,cap:10,autoOn:true,auto:10,listed:false};
+const S={pct:40,mu:1.2,capOn:true,cap:10,autoOn:true,auto:10,listed:false,sold:0};
 function openSell(){
   const m=document.createElement("div");m.className="scrim";m.id="scrim";
   m.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="Sell action">
@@ -489,6 +630,7 @@ function openSell(){
   m.onclick=e=>{if(e.target===m)closeModal()};
   renderSell();
 }
+function afterListing(){renderSell();updateSellBtn();renderRight()}
 function renderSell(){
   const host=$("sellBody");
   if(S.listed){
@@ -503,8 +645,8 @@ function renderSell(){
         <button class="btn btn-g" id="cancelSell" style="flex:1">Cancel Sell Action</button>
         <button class="btn btn-w" id="editSell">Sell More</button>
       </div>`;
-    $("cancelSell").onclick=()=>{S.listed=false;renderSell()};
-    $("editSell").onclick=()=>{S.listed=false;renderSell()};
+    $("cancelSell").onclick=()=>{S.listed=false;afterListing()};
+    $("editSell").onclick=()=>{S.listed=false;afterListing()};
     return;
   }
   host.innerHTML=`<div class="fld">
@@ -556,7 +698,7 @@ function renderSell(){
   $("sAutoOn").onclick=e=>{S.autoOn=e.currentTarget.getAttribute("aria-pressed")!=="true";e.currentTarget.setAttribute("aria-pressed",S.autoOn);sellMath()};
   $("sNote").oninput=e=>{$("sNoteN").textContent=e.target.value.length};
   $("sCancel").onclick=closeModal;
-  $("sGo").onclick=()=>{S.listed=true;renderSell()};
+  $("sGo").onclick=()=>{S.listed=true;afterListing()};
   $("sNoteN").textContent=$("sNote").value.length;
   sellMath();
 }
@@ -586,5 +728,121 @@ setInterval(()=>{
   $("clock").textContent=m>0?m+"m":s+"s";
 },1000);
 
-renderMid();renderRight();
+/* ---------- account menu + routing ---------- */
+const menu=$("acctMenu"),acctBtn=$("acctBtn");
+function setMenu(open){menu.hidden=!open;acctBtn.setAttribute("aria-expanded",open?"true":"false")}
+acctBtn.onclick=e=>{e.stopPropagation();setMenu(menu.hidden)};
+document.addEventListener("click",e=>{if(!menu.hidden&&!menu.contains(e.target))setMenu(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")setMenu(false)});
+
+function showView(v){
+  const rec=v==="record";
+  $("view-lobby").hidden=rec;
+  $("view-record").hidden=!rec;
+  document.querySelectorAll("#gnav button").forEach(b=>b.classList.toggle("on",!rec&&b.dataset.go==="lobby"));
+  $("miRecord").classList.toggle("on",rec);
+  setMenu(false);
+  const want=rec?"record":"";
+  if(location.hash.slice(1)!==want)location.hash=want;
+  window.scrollTo(0,0);
+  if(rec)renderRecord();
+}
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=e=>{e.stopPropagation();showView(b.dataset.go)});
+window.addEventListener("hashchange",()=>showView(location.hash.slice(1)==="record"?"record":"lobby"));
+
+/* ---------- staking record ---------- */
+let recTab="backer";
+const ledger={
+  backer:[
+    {tid:"M₮16",d:"16 Nov",t:"₮250 Midnight ₮lassic",w:"pr1ya",share:5,mu:1.00,cost:12.50,fin:"Playing",ret:null,st:"pending"},
+    {tid:"M₮16",d:"16 Nov",t:"₮250 Midnight ₮lassic",w:"ElxDreamer",share:3,mu:1.20,cost:9.00,fin:"Playing",ret:null,st:"pending"},
+    {tid:"M₮16",d:"16 Nov",t:"₮250 Midnight ₮lassic",w:"meitnk",share:2,mu:1.50,cost:7.50,fin:"Playing",ret:null,st:"pending"},
+    {tid:"NO14",d:"14 Nov",t:"₮100 Night Owl",w:"ferr",share:7.5,mu:1.05,cost:7.88,fin:"3rd",ret:41.25,st:"settled"},
+    {tid:"NO13",d:"13 Nov",t:"₮100 Night Owl",w:"teo_",share:5,mu:1.80,cost:9.00,fin:"Busted",ret:0,st:"lost"},
+    {tid:"M₮12",d:"12 Nov",t:"₮250 Midnight ₮lassic",w:"teo_",share:2,mu:1.80,cost:9.00,fin:"Busted",ret:0,st:"lost"},
+    {tid:"WM09",d:"09 Nov",t:"₮500 Weekend Major",w:"ElxDreamer",share:3,mu:1.20,cost:18.00,fin:"12th",ret:27.60,st:"settled"},
+    {tid:"TB07",d:"07 Nov",t:"₮55 Turbo",w:"meitnk",share:10,mu:1.50,cost:8.25,fin:"Busted",ret:0,st:"lost"},
+    {tid:"NO05",d:"05 Nov",t:"₮100 Night Owl",w:"sokol90",share:15,mu:0.90,cost:13.50,fin:"Unregistered",ret:13.50,st:"refunded"}
+  ],
+  seller:[
+    {tid:"M₮16",d:"16 Nov",t:"₮250 Midnight ₮lassic",sold:40,mu:1.20,b:4,raised:120.00,fin:"Playing",paid:null,st:"pending"},
+    {tid:"NO13",d:"13 Nov",t:"₮100 Night Owl",sold:50,mu:1.10,b:6,raised:55.00,fin:"2nd \u00B7 ₮420",paid:210.00,st:"settled"},
+    {tid:"TB10",d:"10 Nov",t:"₮55 Turbo",sold:60,mu:1.00,b:3,raised:33.00,fin:"Busted",paid:0,st:"lost"},
+    {tid:"M₮06",d:"06 Nov",t:"₮250 Midnight ₮lassic",sold:30,mu:1.30,b:5,raised:97.50,fin:"Busted",paid:0,st:"lost"},
+    {tid:"NO02",d:"02 Nov",t:"₮100 Night Owl",sold:25,mu:1.15,b:2,raised:28.75,fin:"9th \u00B7 ₮95",paid:23.75,st:"settled"}
+  ]
+};
+function byTournament(){
+  const m=new Map();
+  const get=r=>{
+    if(!m.has(r.tid))m.set(r.tid,{d:r.d,t:r.t,n:0,staked:0,ret:0,sold:0,raised:0,paid:0,backers:0,pending:false});
+    return m.get(r.tid);
+  };
+  ledger.backer.forEach(r=>{const g=get(r);g.n++;g.staked+=r.cost;if(r.ret!==null)g.ret+=r.ret;if(r.st==="pending")g.pending=true});
+  ledger.seller.forEach(r=>{const g=get(r);g.sold+=r.sold;g.raised+=r.raised;g.backers+=r.b;if(r.paid!==null)g.paid+=r.paid;if(r.st==="pending")g.pending=true});
+  return [...m.values()].sort((a,b)=>parseInt(b.d)-parseInt(a.d));
+}
+const chip=s=>`<span class="chipst st-${s}">${s}</span>`;
+function renderRecord(){
+  document.querySelectorAll("#recTabs .pill").forEach(p=>p.classList.toggle("on",p.dataset.rt===recTab));
+  const tids=rs=>new Set(rs.map(r=>r.tid)).size;
+  if(recTab==="backer"){
+    const rows=ledger.backer, done=rows.filter(r=>r.st!=="pending");
+    const staked=rows.reduce((a,r)=>a+r.cost,0);
+    const back=done.reduce((a,r)=>a+r.ret,0);
+    const net=back-done.reduce((a,r)=>a+r.cost,0);
+    $("recTiles").innerHTML=`
+      <div class="tile"><div class="k">Stakes bought</div><div class="v num">${rows.length}</div></div>
+      <div class="tile"><div class="k">Across tournaments</div><div class="v num">${tids(rows)}</div></div>
+      <div class="tile"><div class="k">Total staked</div><div class="v gold num">${mny(staked)}</div></div>
+      <div class="tile"><div class="k">Net on settled</div><div class="v num ${net>=0?"pos":""}">${net>=0?"+":"\u2212"}${mny(Math.abs(net))}</div></div>`;
+    $("recHead").innerHTML=`<tr><th>Date</th><th>Tournament</th><th>Player</th><th class="r">Share</th><th class="r">MU</th><th class="r">Paid</th><th>Finish</th><th class="r">Returned</th><th>Status</th></tr>`;
+    $("recBody").innerHTML=rows.map(r=>`<tr>
+        <td class="dim num">${r.d}</td><td>${r.t}</td><td>${r.w}</td>
+        <td class="r num">${pctf(r.share)}</td><td class="r num">${r.mu.toFixed(2)}</td>
+        <td class="r num">${mny(r.cost)}</td><td class="dim">${r.fin}</td>
+        <td class="r num">${r.ret===null?"\u2014":mny(r.ret)}</td><td>${chip(r.st)}</td></tr>`).join("");
+    $("recFoot").textContent="One tournament can hold several stakes \u2014 each player you back is its own row.";
+  }else if(recTab==="seller"){
+    const rows=ledger.seller, done=rows.filter(r=>r.st!=="pending");
+    const raised=rows.reduce((a,r)=>a+r.raised,0);
+    const paid=done.reduce((a,r)=>a+r.paid,0);
+    const backers=rows.reduce((a,r)=>a+r.b,0);
+    $("recTiles").innerHTML=`
+      <div class="tile"><div class="k">Times sold</div><div class="v num">${rows.length}</div></div>
+      <div class="tile"><div class="k">Backers</div><div class="v num">${backers}</div></div>
+      <div class="tile"><div class="k">Raised from backers</div><div class="v gold num">${mny(raised)}</div></div>
+      <div class="tile"><div class="k">Paid to backers</div><div class="v num">${mny(paid)}</div></div>`;
+    $("recHead").innerHTML=`<tr><th>Date</th><th>Tournament</th><th class="r">Sold</th><th class="r">MU</th><th class="r">Backers</th><th class="r">Raised</th><th>Finish</th><th class="r">Paid out</th><th>Status</th></tr>`;
+    $("recBody").innerHTML=rows.map(r=>`<tr>
+        <td class="dim num">${r.d}</td><td>${r.t}</td>
+        <td class="r num">${pctf(r.sold)}</td><td class="r num">${r.mu.toFixed(2)}</td>
+        <td class="r num">${r.b}</td><td class="r num">${mny(r.raised)}</td>
+        <td class="dim">${r.fin}</td><td class="r num">${r.paid===null?"\u2014":mny(r.paid)}</td>
+        <td>${chip(r.st)}</td></tr>`).join("");
+    $("recFoot").textContent="Paid out is the backers' combined share of your prize. Raised is what they paid you, markup included.";
+  }else{
+    const g=byTournament(), both=g.filter(x=>x.n>0&&x.sold>0).length;
+    $("recTiles").innerHTML=`
+      <div class="tile"><div class="k">Tournaments</div><div class="v num">${g.length}</div></div>
+      <div class="tile"><div class="k">Backed and sold in</div><div class="v num ${both?"pos":""}">${both}</div></div>
+      <div class="tile"><div class="k">Stakes bought</div><div class="v num">${ledger.backer.length}</div></div>
+      <div class="tile"><div class="k">Times sold</div><div class="v num">${ledger.seller.length}</div></div>`;
+    $("recHead").innerHTML=`<tr><th>Date</th><th>Tournament</th><th class="r">Bought</th><th class="r">Staked</th><th class="r">Returned</th><th class="r">Sold</th><th class="r">Raised</th><th class="r">Paid out</th><th>Status</th></tr>`;
+    $("recBody").innerHTML=g.map(x=>`<tr>
+        <td class="dim num">${x.d}</td><td>${x.t}</td>
+        <td class="r num ${x.n?"":"dim"}">${x.n||"\u2014"}</td>
+        <td class="r num ${x.n?"":"dim"}">${x.n?mny(x.staked):"\u2014"}</td>
+        <td class="r num ${x.n?"":"dim"}">${x.n?mny(x.ret):"\u2014"}</td>
+        <td class="r num ${x.sold?"":"dim"}">${x.sold?pctf(x.sold):"\u2014"}</td>
+        <td class="r num ${x.sold?"":"dim"}">${x.sold?mny(x.raised):"\u2014"}</td>
+        <td class="r num ${x.sold?"":"dim"}">${x.sold?mny(x.paid):"\u2014"}</td>
+        <td>${chip(x.pending?"pending":"settled")}</td></tr>`).join("");
+    $("recFoot").textContent="A row with figures on both sides is a tournament where you backed other players and sold your own action.";
+  }
+}
+document.querySelectorAll("#recTabs .pill").forEach(p=>p.onclick=()=>{recTab=p.dataset.rt;renderRecord()});
+
+renderMid();renderRight();updateSellBtn();
+showView(location.hash.slice(1)==="record"?"record":"lobby");
 </script>
