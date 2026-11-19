@@ -197,6 +197,7 @@ textarea{width:100%;background:var(--panel-2);border:0;border-radius:11px;color:
 .acct .bal{font-size:12px;color:var(--gold);font-weight:700;line-height:1.25;text-align:left}
 .menu{position:absolute;right:max(16px,env(safe-area-inset-right,0px));margin-top:8px;background:var(--panel);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.65);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,200px);width:min(540px,calc(100vw - 32px));z-index:31;overflow:hidden}
 @media(max-width:560px){.menu{grid-template-columns:1fr}}
+.menu[hidden]{display:none}
 .menu .l{padding:11px;display:grid;gap:1px;border-right:1px solid var(--line)}
 .menu .r{padding:11px;display:grid;gap:1px;align-content:start}
 .menu .hd{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:7px 11px 5px}
@@ -733,6 +734,7 @@ const menu=$("acctMenu"),acctBtn=$("acctBtn");
 function setMenu(open){menu.hidden=!open;acctBtn.setAttribute("aria-expanded",open?"true":"false")}
 acctBtn.onclick=e=>{e.stopPropagation();setMenu(menu.hidden)};
 document.addEventListener("click",e=>{if(!menu.hidden&&!menu.contains(e.target))setMenu(false)});
+menu.addEventListener("click",e=>{if(e.target.closest(".mi"))setMenu(false)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")setMenu(false)});
 
 function showView(v){
